@@ -15,6 +15,26 @@ import shutil
 import pandas as pd
 from flask_cors import CORS
 from google.cloud.firestore_v1 import Increment, Transaction
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+firebase_credentials = {
+    "type": os.getenv("type"),
+    "project_id": os.getenv("project_id"),
+    "private_key_id": os.getenv("private_key_id"),
+    "private_key": os.getenv("private_key").replace('\\n', '\n'),  # Replace escaped newlines
+    "client_email": os.getenv("client_email"),
+    "client_id": os.getenv("client_id"),
+    "auth_uri": os.getenv("auth_uri"),
+    "token_uri": os.getenv("token_uri"),
+    "auth_provider_x509_cert_url": os.getenv("auth_provider_x509_cert_url"),
+    "client_x509_cert_url": os.getenv("client_x509_cert_url"),
+    "universe_domain": os.getenv("universe_domain"),
+}
+
+
 
 class GoogleDriveAPI:
     def __init__(self, creds):
@@ -24,7 +44,7 @@ class GoogleDriveAPI:
         self.db = self.initialize_firebase()
         self.original_invoice_file_path = ''  
 
-        @self.app.route('/health', methods=['GET'])
+        @self.app.route('/', methods=['GET'])
         def check_health():
             return 'health OK'
         
@@ -183,7 +203,7 @@ class GoogleDriveAPI:
     
     def initialize_firebase(self):
         if not firebase_admin._apps:
-            cred = credentials.Certificate("serviceAccountKey.json")
+            cred = credentials.Certificate(firebase_credentials)
             firebase_admin.initialize_app(cred , name='Autoinvoice')
         return firestore.client(app=firebase_admin.get_app(name='Autoinvoice'))
 

@@ -33,7 +33,7 @@ MANIFEST
 *.spec
 
 *.xlsx
-
+/autoinvoice
 
 # Installer logs
 pip-log.txt
